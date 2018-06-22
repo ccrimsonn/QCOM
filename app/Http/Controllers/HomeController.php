@@ -26,10 +26,11 @@ class HomeController extends Controller
     public function index()
     {
         $chart =new StockChart;
-        $closePrice = Stock::pluck('close'); //chart display close price
-        $lowPrice = Stock::pluck('low'); //low price array
-        $highPrice = Stock::pluck('high'); //high price array
-        $date = Stock::pluck('date'); //date array
+        $closePrice = Stock::orderby('date')->pluck('close'); //chart display close price
+        $date = Stock::orderby('date')->pluck('date'); //date array
+//        $lowPrice = Stock::pluck('low'); //low price array
+//        $highPrice = Stock::pluck('high'); //high price array
+
 
         $lowValue = 0; //the lowest price
         $highValue = 0; //the highest price
@@ -38,22 +39,22 @@ class HomeController extends Controller
         $lowIndex = 0; //the lowest price index
         $profit = 0; //the maximum profit
 
-        for($i = 0; $i < sizeof($lowPrice); $i++){ //go through the array, all arrays have same array size
-            if($highPrice[$i] - $lowPrice[$lowestPointer] > $profit){ //find the maximum profit
-                $profit = $highPrice[$i] - $lowPrice[$lowestPointer]; //store data to the variables
-                $highValue = $highPrice[$i]; //the highest price
-                $lowValue = $lowPrice[$lowestPointer]; //the lowest price
-                $lowIndex = $lowestPointer + 1; //the primary key for the lowest price within the maximum profit range in stock table
-                $highIndex = $i + 1; //the primary key for the highest price within the maximum profit range in stock table
+        for($i = 0; $i < sizeof($closePrice); $i++){ //go through the array, all arrays have same array size
+            if($closePrice[$i] - $closePrice[$lowestPointer] > $profit){
+                $profit = $closePrice[$i] - $closePrice[$lowestPointer]; //find the maximum profit
+                $highValue = $closePrice[$i]; //the highest close price
+                $lowValue = $closePrice[$lowestPointer]; //the lowest close price
+                $lowIndex = $lowestPointer; //the primary key for the lowest close price within the maximum profit range in stock table
+                $highIndex = $i; //the primary key for the highest close price within the maximum profit range in stock table
             }
-            if($lowPrice[$i] < $lowPrice[$lowestPointer]){ //find out the lowest price
+            if($closePrice[$i] < $closePrice[$lowestPointer]){ //find out the lowest close price
                 $lowestPointer = $i;
             }
         }
 
-        $lowValueDate = $date[$lowIndex]; //the date of the lowest price appeared
-        $highValueDate = $date[$highIndex]; //the date of the highest price appeared
-
+        $lowValueDate = $date[$lowIndex]; //the date of the lowest close price appeared
+        $highValueDate = $date[$highIndex]; //the date of the highest close price appeared
+        //dd($lowValueDate);
         $chart->dataset('Close Price', 'line', $closePrice); //create the stock chart
         //pass values to the home view
         return view('home', [
@@ -61,8 +62,8 @@ class HomeController extends Controller
             'profit' => $profit,
             'lowPrice' => $lowValue,
             'highPrice' => $highValue,
-            'highPriceDate' => $lowValueDate,
-            'lowPriceDate' => $highValueDate,
+            'highPriceDate' => $highValueDate,
+            'lowPriceDate' => $lowValueDate,
         ]);
     }
 }

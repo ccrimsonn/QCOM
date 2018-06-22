@@ -15,7 +15,7 @@ class StockChart extends Chart
     public function __construct()
     {
         parent::__construct();
-        $date = Stock::pluck('date');
+        $date = Stock::orderby('date')->pluck('date');
         $this->labels($date)
             ->options([
                 'legend' => ['display' => false],
