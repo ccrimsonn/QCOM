@@ -54,7 +54,6 @@ class HomeController extends Controller
 
         $lowValueDate = $date[$lowIndex]; //the date of the lowest close price appeared
         $highValueDate = $date[$highIndex]; //the date of the highest close price appeared
-        //dd($lowValueDate);
         $chart->dataset('Close Price', 'line', $closePrice); //create the stock chart
         //pass values to the home view
         return view('home', [
